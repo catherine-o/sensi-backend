@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const User = require('../models/user_model')
+const Post = require('../models/post_model')
 
 router.get('/users', (req, res) => {
     User.query()
@@ -17,7 +18,20 @@ router.get('/users/:id', (req, res) => {
         .eager('posts')
         .then(user => {
             res.json(user)
-        })
+    })
+})
+    
+router.post('/users/:id/posts', (req, res) => {
+    let id = parseInt(req.params.id)
+    Post.query().insert({
+        content: req.body.content,
+        polarity: req.body.polarity,
+        polarity_confidence: req.body.polarity_confidence,
+        user_id: id
+    })
+    .then(user => {
+        res.json(user)
+    })
 })
 
 router.post('/users', (req, res) => {
@@ -30,6 +44,7 @@ router.post('/users', (req, res) => {
         res.json(user)
     })
 })
+
 
 router.put('/users/:id', (req, res) => {
     let id = parseInt(req.params.id)
@@ -45,6 +60,16 @@ router.put('/users/:id', (req, res) => {
             res.json(user)
         })
     })
+})
+    
+
+router.delete('/users/:id/posts/:id', (req, res) => {
+    let postId = parseInt(req.params.id)
+    Post.query()
+        .where('id', postId)
+        .del()
+        .returning("user_id")
+        .then(userId => res.json(userId))
 })
 
 router.delete('/users/:id', (req, res) => {

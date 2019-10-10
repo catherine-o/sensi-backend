@@ -9,6 +9,7 @@ app.use(bodyParser.json())
 
 
 app.use('/api', require('./api/users').router)
+// app.use('/api', require('./api/posts').router)
 
 
 app.listen(port, () => {
