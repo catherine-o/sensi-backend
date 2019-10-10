@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
         t.string('content').notNullable()
         t.string('polarity').notNullable()
         t.string('polarity_confidence').notNullable()
-        t.integer('user_id').references('id').inTable('users')
+        t.integer('user_id').references('id').inTable('users').onDelete('SET NULL')
         t.timestamps()
     })
 };
