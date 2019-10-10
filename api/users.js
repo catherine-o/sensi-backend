@@ -35,8 +35,10 @@ router.post('/users/:id/posts', verifyToken, (req, res) => {
                 user_id: id
             })
             .then(post => {
-                res.json(post),
-                authData
+                res.json({
+                    post,
+                    authData
+                })
             })
         }
     })
@@ -49,7 +51,12 @@ router.post('/users', (req, res) => {
         password: req.body.password
     })
     .then(user => {
-        res.json(user)
+        jwt.sign({user}, 'secretkey', (err, token) => {
+            res.json({
+                user,
+                token
+            })
+        })
     })
 })
 
