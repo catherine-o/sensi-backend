@@ -76,38 +76,56 @@ router.post('/users', (req, res) => {
 
 router.put('/users/:id', (req, res) => {
     let id = parseInt(req.params.id)
-    User.query().update({
-        username: req.body.username,
-        name: req.body.name,
-        password: req.body.password
-    })
-    .then(id => {
-        User.query()
-        .where('id', id)
-        .then(user => {
-            res.json(user)
-        })
+    jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            User.query().update({
+                username: req.body.username,
+                name: req.body.name,
+                password: req.body.password
+            })
+            .then(id => {
+                User.query()
+                .where('id', id)
+                .then(user => {
+                    res.json(user)
+                })
+            })
+        }
     })
 })
     
 
 router.delete('/users/:id/posts/:id', (req, res) => {
     let postId = parseInt(req.params.id)
-    Post.query()
-        .where('id', postId)
-        .del()
-        .returning("user_id")
-        .then(userId => res.json(userId))
+    jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            Post.query()
+                .where('id', postId)
+                .del()
+                .returning("user_id")
+                .then(userId => res.json(userId))
+        }
+    })
 })
 
 
 router.delete('/users/:id', (req, res) => {
     let id = parseInt(req.params.id)
-    User.query()
-        .where('id', id)
-        .del()
-        .returning("username")
-        .then(username => res.json(username))
+    jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            User.query()
+                .where('id', id)
+                .del()
+                .returning("username")
+                .then(username => res.json(username))
+        }
+    })
 })
 
 module.exports = {
