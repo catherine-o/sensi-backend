@@ -5,26 +5,38 @@ const router = express.Router()
 const User = require('../models/user_model')
 const Post = require('../models/post_model')
 
-router.get('/users', (req, res) => {
-    User.query()
-        .then(users => {
-            res.json(users)
-        })
-})
+//Don't need show page for all?
+// router.get('/users', (req, res) => {
+//     User.query()
+//         .then(users => {
+//             res.json(users)
+//         })
+// })
+
 
 router.get('/users/:id', (req, res) => {
     let id = parseInt(req.params.id)
-    User.query()
-        .where('id', id)
-        .eager('posts')
-        .then(user => {
-            res.json(user)
+    jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            User.query()
+                .where('id', id)
+                .eager('posts')
+                .then(user => {
+                    res.json({
+                        user,
+                        authData
+                    })
+                })
+        }
     })
 })
+
     
 router.post('/users/:id/posts', verifyToken, (req, res) => {
     let id = parseInt(req.params.id)
-    jwt.verify(req.token, 'secretkey', (err, authData) => {
+    jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
         if(err) {
             res.sendStatus(403)
         } else {
@@ -44,6 +56,7 @@ router.post('/users/:id/posts', verifyToken, (req, res) => {
     })
 })
 
+
 router.post('/users', (req, res) => {
     User.query().insert({
         username: req.body.username,
@@ -51,7 +64,7 @@ router.post('/users', (req, res) => {
         password: req.body.password
     })
     .then(user => {
-        jwt.sign({user}, 'secretkey', (err, token) => {
+        jwt.sign({user}, process.env.SECRET_KEY, (err, token) => {
             res.json({
                 user,
                 token
@@ -86,6 +99,7 @@ router.delete('/users/:id/posts/:id', (req, res) => {
         .returning("user_id")
         .then(userId => res.json(userId))
 })
+
 
 router.delete('/users/:id', (req, res) => {
     let id = parseInt(req.params.id)
