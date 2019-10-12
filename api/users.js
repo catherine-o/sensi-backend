@@ -1,6 +1,8 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
+const bcrypt = require('bcrypt')
+const saltRounds = 15
 
 const User = require('../models/user_model')
 const Post = require('../models/post_model')
@@ -57,22 +59,25 @@ router.post('/users/:id/posts', verifyToken, (req, res) => {
 })
 
 
-router.post('/users', (req, res) => {
-    User.query().insert({
-        username: req.body.username,
-        name: req.body.name,
-        password: req.body.password
-    })
-    .then(user => {
-        jwt.sign({user}, process.env.SECRET_KEY, (err, token) => {
-            res.json({
-                user,
-                token
+router.post('/users/signup', (req, res) => {
+    bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+        User.query().insert({
+            username: req.body.username,
+            name: req.body.name,
+            password: hash
+        })
+        .then(user => {
+            jwt.sign({user}, process.env.SECRET_KEY, (err, token) => {
+                // user.password = ''
+                res.json({
+                    user,
+                    token
+                })
             })
         })
     })
 })
-
+    
 
 router.put('/users/:id', (req, res) => {
     let id = parseInt(req.params.id)
