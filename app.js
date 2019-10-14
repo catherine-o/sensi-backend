@@ -15,33 +15,36 @@ const Users = require('./models/user_model')
 
 app.post('/api/login', (req, res) => {
     let username = req.body.username
-    // bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
-        let password = req.body.password
-        if (username && password) {
-            console.log(password)
-            let user = Users.query()
-            .where('username', username)
-            .andWhere('password', password)
-            .first()
-            .then(assignToken)
-            .catch(error => console.error(error.message))
-        } else {
-            res.json('Invalid username or password')
-        }    
-        
-        function assignToken(user) {
-            if (!user) throw new Error(res.json('Invalid'))
-            
-            return jwt.sign({user}, process.env.SECRET_KEY, (err, token) => {
-                if (err) throw new Error('Error signing JWT')
-                
-                res.json({
-                    token
+    let user = Users.query()
+        .where('username', username)
+        .first()
+        .then(function (user) {
+            if (!user) {
+                res.json('Invalid username or password')
+            } else {
+                bcrypt.compare(req.body.password, user.password, function (err, result) {
+                    if (result == true) {
+                        assignToken(user)
+                    } else {
+                        res.json('Invalid username or password')
+                    }
+                    function assignToken(user) {
+                        if (!user) throw new Error(res.json('Invalid'))
+                        
+                        return jwt.sign({user}, process.env.SECRET_KEY, (err, token) => {
+                            if (err) throw new Error('Error signing JWT')
+                            user.password = null
+                            res.json({
+                                user,
+                                token
+                            })
+                        })
+                    }
                 })
-            })
-        }
-    })
-// })
+            }
+        })  
+})
+
 
 app.use('/api', require('./api/users').router)
 

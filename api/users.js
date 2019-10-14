@@ -8,12 +8,12 @@ const User = require('../models/user_model')
 const Post = require('../models/post_model')
 
 //Don't need show page for all?
-// router.get('/users', (req, res) => {
-//     User.query()
-//         .then(users => {
-//             res.json(users)
-//         })
-// })
+router.get('/users', (req, res) => {
+    User.query()
+        .then(users => {
+            res.json(users)
+        })
+})
 
 
 router.get('/users/:id', (req, res) => {
@@ -68,7 +68,7 @@ router.post('/users/signup', (req, res) => {
         })
         .then(user => {
             jwt.sign({user}, process.env.SECRET_KEY, (err, token) => {
-                // user.password = ''
+                user.password = null
                 res.json({
                     user,
                     token
