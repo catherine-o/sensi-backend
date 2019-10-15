@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const jwt = require('jsonwebtoken')
 const port = process.env.PORT || 8080
 
@@ -7,6 +8,8 @@ const saltRounds = 15
 
 const app = express()
 const bodyParser = require('body-parser')
+
+app.use(cors())
 
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
