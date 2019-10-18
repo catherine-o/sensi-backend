@@ -41,7 +41,7 @@ router.get('/users/:id', (req, res) => {
     })
 })
 
-//Sentiment Analysis, insert into DB, return post and user
+//Sentiment Analysis, insert into DB, return user
 router.post('/users/:id/posts', verifyToken, (req, res) => {
     let id = parseInt(req.params.id)
     let content = req.body.content
@@ -63,9 +63,10 @@ router.post('/users/:id/posts', verifyToken, (req, res) => {
                         User.query()
                             .where('id', id)
                             .eager('posts')
+                            .first()
                             .then(user => {
-                                res.json({user,
-                                post
+                                user.password = ''
+                                res.json({user
                                 })
                             })
                         })
