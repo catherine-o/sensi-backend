@@ -4,6 +4,12 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 const saltRounds = 15
 
+var AYLIENTextAPI = require('aylien_textapi');
+var textapi = new AYLIENTextAPI({
+  application_id: process.env.AYLIEN_ID,
+  application_key: process.env.AYLIEN_API_KEY
+});
+
 const User = require('../models/user_model')
 const Post = require('../models/post_model')
 
@@ -35,25 +41,41 @@ router.get('/users/:id', (req, res) => {
     })
 })
 
-    
+//Sentiment Analysis, insert into DB, return post and user
 router.post('/users/:id/posts', verifyToken, (req, res) => {
     let id = parseInt(req.params.id)
+    let content = req.body.content
     jwt.verify(req.token, process.env.SECRET_KEY, (err, authData) => {
         if(err) {
             res.sendStatus(403)
         } else {
-            Post.query().insert({
-                content: req.body.content,
-                polarity: req.body.polarity,
-                polarity_confidence: req.body.polarity_confidence,
-                user_id: id
-            })
-            .then(post => {
-                res.json({
-                    post,
-                    authData
-                })
-            })
+       console.log(content)
+            textapi.sentiment({
+                'text': content
+            }, function(error, response) {
+                if (error === null) {
+                    console.log(response)
+                    Post.query().insert({
+                        content: content,
+                        polarity: response.polarity,
+                        polarity_confidence: response.polarity_confidence,
+                        user_id: id
+                    })
+                    .then(post => {
+                        console.log(post)
+                        User.query()
+                            .where('id', id)
+                            .eager('posts')
+                            .then(user => {
+                                console.log(user)
+                                res.json({user,
+                                post
+                                })
+                            })
+                        })
+                    }
+                }
+            )
         }
     })
 })
