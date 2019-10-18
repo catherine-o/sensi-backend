@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken')
 const port = process.env.PORT || 8080
 
 const bcrypt = require('bcrypt')
-const saltRounds = 15
 
 const app = express()
 const bodyParser = require('body-parser')

@@ -49,12 +49,10 @@ router.post('/users/:id/posts', verifyToken, (req, res) => {
         if(err) {
             res.sendStatus(403)
         } else {
-       console.log(content)
             textapi.sentiment({
                 'text': content
             }, function(error, response) {
                 if (error === null) {
-                    console.log(response)
                     Post.query().insert({
                         content: content,
                         polarity: response.polarity,
@@ -62,12 +60,10 @@ router.post('/users/:id/posts', verifyToken, (req, res) => {
                         user_id: id
                     })
                     .then(post => {
-                        console.log(post)
                         User.query()
                             .where('id', id)
                             .eager('posts')
                             .then(user => {
-                                console.log(user)
                                 res.json({user,
                                 post
                                 })
