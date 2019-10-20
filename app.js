@@ -29,7 +29,7 @@ app.post('/api/login', (req, res) => {
     let username = req.body.username
     let user = Users.query()
         .where('username', username)
-        // .eager('posts')
+        .eager('posts')
         .first()
         .then(function (user) {
             if (!user) {
