@@ -8,7 +8,17 @@ const bcrypt = require('bcrypt')
 const app = express()
 const bodyParser = require('body-parser')
 
-app.use(cors())
+const whitelist = ['http://localhost:8081']
+const corsOptions = {
+    credentials: true,
+    origin: (origin, callback) => {
+        return whitelist.includes(origin)
+        ? callback(null, true)
+        : callback(new Error('Not allowed by CORS'))
+    }
+} 
+
+app.use(cors(corsOptions))
 
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
@@ -19,7 +29,7 @@ app.post('/api/login', (req, res) => {
     let username = req.body.username
     let user = Users.query()
         .where('username', username)
-        .eager('posts')
+        // .eager('posts')
         .first()
         .then(function (user) {
             if (!user) {
