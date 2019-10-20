@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const saltRounds = 15
-const cors = require('cors')
+// const cors = require('cors')
 
-app.use(cors())
+// app.use(cors())
 
 var AYLIENTextAPI = require('aylien_textapi');
 var textapi = new AYLIENTextAPI({
