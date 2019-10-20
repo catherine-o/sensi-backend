@@ -34,8 +34,7 @@ router.get('/users/:id', (req, res) => {
                 .eager('posts')
                 .then(user => {
                     res.json({
-                        user,
-                        authData
+                        user
                     })
                 })
         }
