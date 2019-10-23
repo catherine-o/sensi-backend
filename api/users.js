@@ -71,21 +71,28 @@ router.post('/users/:id/posts', verifyToken, (req, res) => {
 
 
 router.post('/users/signup', (req, res) => {
-    bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
-        User.query().insert({
-            username: req.body.username,
-            name: req.body.name,
-            password: hash
-        })
-        .then(user => {
-            jwt.sign({user}, process.env.SECRET_KEY, (err, token) => {
-                user.password = null
-                res.json({
-                    user,
-                    token
+    let userExists = User.query().where('username', req.body.username).first()
+    .then(function (userExists) {
+        if (!userExists) {
+        bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+            User.query().insert({
+                username: req.body.username,
+                name: req.body.name,
+                password: hash
+            })
+            .then(user => {
+                jwt.sign({user}, process.env.SECRET_KEY, (err, token) => {
+                    user.password = null
+                    res.json({
+                        user,
+                        token
+                    })
                 })
             })
         })
+        } else {
+            res.json('Username already taken')
+        }
     })
 })
     
