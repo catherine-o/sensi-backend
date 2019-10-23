@@ -14,14 +14,6 @@ var textapi = new AYLIENTextAPI({
 const User = require('../models/user_model')
 const Post = require('../models/post_model')
 
-//Don't need show page for all?
-router.get('/users', (req, res) => {
-    User.query()
-        .then(users => {
-            res.json(users)
-        })
-})
-
 
 router.get('/users/:id', (req, res) => {
     let id = parseInt(req.params.id)
