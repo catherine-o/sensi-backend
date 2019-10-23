@@ -8,7 +8,9 @@ const bcrypt = require('bcrypt')
 const app = express()
 const bodyParser = require('body-parser')
 
-const whitelist = ['http://localhost:8081']
+const whitelist = ['http://localhost:8081', 
+    'https://sensi-journ.firebaseapp.com', 
+    'https://sensi-journ.web.app/']
 const corsOptions = {
     credentials: true,
     origin: (origin, callback) => {
