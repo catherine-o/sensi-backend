@@ -71,9 +71,6 @@ router.post('/users/:id/posts', verifyToken, (req, res) => {
 
 
 router.post('/users/signup', (req, res) => {
-    let userExists = User.query().where('username', username)
-    console.log(userExists)
-    if (!userExists) {
     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
         User.query().insert({
             username: req.body.username,
@@ -90,9 +87,6 @@ router.post('/users/signup', (req, res) => {
             })
         })
     })
-    } else {
-        res.json('Username already taken')
-    }
 })
     
 
