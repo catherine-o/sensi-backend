@@ -123,4 +123,4 @@ Created by [Catherine O'Hara](www.linkedin.com/in/catherine-o)
 Feel free to contact me!
 
 ## License
-[GPL v3.0]()
+[GPL v3.0](https://github.com/catherine-o/sensi-backend/blob/master/LICENSE)
